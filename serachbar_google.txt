@@ -1,0 +1,56 @@
+//html
+
+<label for="city">City</label>
+                 <input type="text" autocomplete="off" name="" id="city" placeholder="Enter city Name">
+                <div class="city_list"></div>
+
+
+<!-- <label for="sub_city">Locality</label>
+                <input type="text" autocomplete="off" name="sub_city" id="sub_city" placeholder="Enter Locality">
+                <div class="sub_city_list"></div> -->
+
+
+//js code
+
+
+$("#city").keyup(function(){
+        let city = $(this).val();
+        if(city !=''){
+          $.ajax({
+            url:"search_city.php",
+            method:"POST",
+            data:{city:city},
+            success:function(data){
+              $("#city_list").fadeIn();
+              $("#city_list").html(data);
+            }
+          });
+        }else{
+             $("#city_list").fadeOut();
+             $("#city_list").html("");
+         }
+      });
+      $(document).on("click", 'li', function(){
+            $("#city").val($(this).text());
+            $("#city_list").fadeOut();
+      });
+
+
+//sql code
+
+
+if(isset($_POST['city'])){
+    $city_list='';
+    $query = "SELECT * FROM city WHERE citys_name LIKE '%".$_POST['city']."%'";
+    $result = mysqli_query($con,$query);
+    $city_list= '<ul class="list-unstyled">';
+    if(mysqli_num_rows($result) >0 ){
+      while ($res = mysqli_fetch_array($result)) {
+        $city_list .='<li>'.$res['citys_name'].'</li>';
+      }
+    }else{
+      $city_list .='<li>City Not Fount In our Record</li>';
+    }
+    $city_list .='</ul>';
+    echo $city_list;
+  }
